@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Task - To-Do App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Flatpickr CSS for modern date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-light">
+    
+    <!-- Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-check2-square me-2"></i>ToDo App
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/create-task">
+                            <i class="bi bi-plus-circle me-1"></i>Create Task
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pending-tasks">
+                            <i class="bi bi-hourglass-split me-1"></i>Pending Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/completed-tasks">
+                            <i class="bi bi-check-circle me-1"></i>Completed Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/daily-templates">
+                            <i class="bi bi-calendar-check me-1"></i>Daily Templates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reports">
+                            <i class="bi bi-graph-up me-1"></i>Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Date and Time Widget -->
+    <div class="container mb-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-light border-0 shadow-sm">
+                    <div class="card-body py-2">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center text-primary">
+                                    <i class="bi bi-calendar3 me-2 fs-5"></i>
+                                    <span id="current-date" class="fw-bold fs-6"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-md-end justify-content-start flex-wrap">
+                                    <span class="badge bg-primary me-2 mb-1">
+                                        <i class="bi bi-clock me-1"></i>EST: <span id="est-time"></span>
+                                    </span>
+                                    <span class="badge bg-success me-2 mb-1">
+                                        <i class="bi bi-globe me-1"></i>PST: <span id="pst-time"></span>
+                                    </span>
+                                    <span class="badge bg-info mb-1">
+                                        <i class="bi bi-globe-asia-australia me-1"></i>IST: <span id="ist-time"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container my-5">
+        <div class="card shadow-lg rounded-3">
+            <div class="card-header bg-success text-white text-center py-3 rounded-top-3">
+                <h1 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Create New Task</h1>
+            </div>
+            <div class="card-body p-4">
+                <!-- Error Messages -->
+                {% if error == 'duplicate' and task_name and error_date %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Duplicate Task Detected!</strong> 
+                    Task "{{ task_name }}" already exists for {{ error_date }}. 
+                    Please choose a different task name or date.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                
+                <form action="/tasks" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Task Name *</label>
+                        <input type="text" class="form-control rounded-pill" id="name" name="name" required maxlength="100" placeholder="Enter a descriptive task name">
+                        <div class="invalid-feedback">
+                            Please provide a valid task name.
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="priority" class="form-label">Priority</label>
+                            <input type="hidden" id="priority" name="priority" value="Medium" required>
+                            <div class="btn-group d-flex" role="group" aria-label="Priority selection">
+                                <button type="button" class="btn btn-outline-success priority-btn" data-priority="Low">
+                                    🟢 Low
+                                </button>
+                                <button type="button" class="btn btn-warning priority-btn active" data-priority="Medium">
+                                    🟡 Medium
+                                </button>
+                                <button type="button" class="btn btn-outline-danger priority-btn" data-priority="High">
+                                    🔴 High
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="task_type" class="form-label">Task Type</label>
+                            <select class="form-select rounded-pill" id="task_type" name="task_type" required>
+                                <option value="BAU">🔧 BAU (Business As Usual)</option>
+                                <option value="SRE">🛡️ SRE (Site Reliability Engineering)</option>
+                                <option value="Automation">🤖 Automation</option>
+                                <option value="Monitoring">📊 Monitoring</option>
+                                <option value="Observability">👁️ Observability</option>
+                                <option value="Meetings">🤝 Meetings</option>
+                                <option value="PTO">🌴 PTO (Paid Time Off)</option>
+                                <option value="Holiday">🏖️ Holiday</option>
+                                <option value="Other" selected>📋 Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label">Start Date *</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start-pill"><i class="bi bi-calendar-event"></i></span>
+                                <input type="text" class="form-control rounded-end-pill" id="start_date" name="start_date" required placeholder="Select start date">
+                            </div>
+                            <div class="invalid-feedback">
+                                Please provide a start date.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="deadline_date" class="form-label">Deadline Date *</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start-pill"><i class="bi bi-calendar-x"></i></span>
+                                <input type="text" class="form-control rounded-end-pill" id="deadline_date" name="deadline_date" required placeholder="Select deadline date">
+                            </div>
+                            <div class="invalid-feedback">
+                                Please provide a deadline date.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="time_allocated" class="form-label">Time Allocated (minutes) *</label>
+                        <div class="input-group">
+                            <span class="input-group-text rounded-start-pill"><i class="bi bi-clock"></i></span>
+                            <input type="number" class="form-control rounded-end-pill" id="time_allocated" name="time_allocated" value="30" min="1" max="9999" required>
+                            <span class="input-group-text rounded-end-pill">min</span>
+                        </div>
+                        <div class="form-text">Estimated time to complete this task (default: 30 minutes)</div>
+                        <div class="invalid-feedback">
+                            Please provide time allocation (1-9999 minutes).
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-sm">
+                            <i class="bi bi-check-circle-fill me-2"></i>Create Task
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Quick Templates Section -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <hr class="my-4">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">⚡ Quick Task Templates</h5>
+                                <small class="text-white-50">Click to quickly create tasks from your daily templates</small>
+                            </div>
+                            <div class="card-body">
+                                {% if daily_templates %}
+                                    <div class="row">
+                                        {% for template in daily_templates %}
+                                        <div class="col-md-4 mb-2">
+                                            <form method="post" action="/tasks">
+                                                <input type="hidden" name="name" value="{{ template.name }}">
+                                                <input type="hidden" name="priority" value="{{ template.priority }}">
+                                                <input type="hidden" name="task_type" value="{{ template.task_type }}">
+                                                <input type="hidden" name="time_allocated" value="{{ template.time_allocated }}">
+                                                <input type="hidden" name="start_date" class="quick_start_date">
+                                                <input type="hidden" name="deadline_date" class="quick_deadline_date">
+                                                <button type="submit" class="btn btn-outline-primary w-100" title="{{ template.name }} - {{ template.time_allocated }} minutes">
+                                                    {% if template.task_type == 'BAU' %}📧
+                                                    {% elif template.task_type == 'SRE' %}❄️
+                                                    {% elif template.task_type == 'Meetings' %}🤝
+                                                    {% elif template.task_type == 'Monitoring' %}📊
+                                                    {% elif template.task_type == 'Automation' %}🤖
+                                                    {% elif template.task_type == 'Observability' %}👁️
+                                                    {% elif template.task_type == 'PTO' %}🌴
+                                                    {% elif template.task_type == 'Holiday' %}🏖️
+                                                    {% else %}📋
+                                                    {% endif %} 
+                                                    {{ template.name }} ({{ template.time_allocated }}min)
+                                                </button>
+                                            </form>
+                                        </div>
+                                        {% if loop.index % 3 == 0 and not loop.last %}
+                                    </div>
+                                    <div class="row">
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        No active daily templates found. 
+                                        <a href="/daily-templates" class="text-decoration-none">Create some templates</a> 
+                                        to see quick options here.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Flatpickr JS for modern date picker -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <script>
+        // Initialize modern date pickers
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const startDatePicker = flatpickr("#start_date", {
+            dateFormat: "Y-m-d",
+            defaultDate: today,
+            minDate: "today",
+            theme: "material_blue",
+            onChange: function(selectedDates) {
+                // Update deadline picker minimum date to selected start date
+                const selectedStartDate = selectedDates[0] || today;
+                deadlineDatePicker.set('minDate', selectedStartDate);
+                
+                // If deadline is before the new start date, update deadline to start date
+                const currentDeadline = deadlineDatePicker.selectedDates[0];
+                if (!currentDeadline || currentDeadline < selectedStartDate) {
+                    deadlineDatePicker.setDate(selectedStartDate);
+                }
+            }
+        });
+        
+        const deadlineDatePicker = flatpickr("#deadline_date", {
+            dateFormat: "Y-m-d",
+            defaultDate: today,  // Changed from tomorrow to today
+            minDate: today,      // Changed from tomorrow to today - allows selecting today
+            theme: "material_blue"
+        });
+        
+        // Bootstrap form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        
+        // Custom validation for dates
+        document.getElementById('deadline_date').addEventListener('change', function() {
+            const startDate = new Date(document.getElementById('start_date').value);
+            const deadlineDate = new Date(this.value);
+            
+            if (deadlineDate < startDate) {
+                this.setCustomValidity('Deadline must be on or after start date');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Quick time allocation buttons
+        const timeButtons = [15, 30, 60, 120, 240];
+        const timeInput = document.getElementById('time_allocated');
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'mt-2';
+        buttonContainer.innerHTML = '<small class="text-muted">Quick select: </small>';
+        
+        timeButtons.forEach(minutes => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-outline-secondary btn-sm me-1 rounded-pill';
+            btn.textContent = `${minutes}m`;
+            btn.onclick = () => timeInput.value = minutes;
+            buttonContainer.appendChild(btn);
+        });
+        
+        timeInput.parentNode.parentNode.appendChild(buttonContainer);
+        
+        // Priority button selection
+        document.querySelectorAll('.priority-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all priority buttons
+                document.querySelectorAll('.priority-btn').forEach(btn => {
+                    btn.classList.remove('active', 'btn-success', 'btn-warning', 'btn-danger');
+                    btn.classList.add('btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
+                });
+                
+                // Add active class to clicked button and set appropriate style
+                this.classList.add('active');
+                const priority = this.getAttribute('data-priority');
+                
+                if (priority === 'Low') {
+                    this.classList.remove('btn-outline-success');
+                    this.classList.add('btn-success');
+                } else if (priority === 'Medium') {
+                    this.classList.remove('btn-outline-warning');
+                    this.classList.add('btn-warning');
+                } else if (priority === 'High') {
+                    this.classList.remove('btn-outline-danger');
+                    this.classList.add('btn-danger');
+                }
+                
+                // Update hidden input value
+                document.getElementById('priority').value = priority;
+            });
+        });
+        
+        // Set dates for quick templates
+        function setQuickTemplateDates() {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            // Set dates for all quick template forms using class selectors
+            const startDateInputs = document.querySelectorAll('.quick_start_date');
+            const deadlineDateInputs = document.querySelectorAll('.quick_deadline_date');
+            
+            startDateInputs.forEach(input => {
+                input.value = todayStr;
+            });
+            
+            // For daily templates, deadline should be same day as start
+            deadlineDateInputs.forEach(input => {
+                input.value = todayStr;  // Changed from tomorrowStr to todayStr
+            });
+        }
+        
+        // Initialize quick template dates when page loads
+        setQuickTemplateDates();
+        
+        // Clear URL parameters if they exist (for clean URLs after error display)
+        if (window.location.search) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        // Date and Time Display Functions
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format current date
+            const dateOptions = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
+            
+            // EST Time (Eastern Time)
+            const estTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'America/New_York',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('est-time').textContent = estTime;
+            
+            // PST Time (Pacific Time)
+            const pstTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'America/Los_Angeles',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('pst-time').textContent = pstTime;
+            
+            // IST Time (Indian Standard Time)
+            const istTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('ist-time').textContent = istTime;
+        }
+        
+        // Update time immediately and then every second
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>

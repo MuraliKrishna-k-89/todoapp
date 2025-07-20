@@ -1,0 +1,26 @@
+# Todo App - Windows Setup Instructions
+
+## Quick Start (Recommended)
+1. Double-click `run.bat` to start the app quickly
+   OR
+2. Open Command Prompt in this folder and run: python -m uvicorn main:app --host 0.0.0.0 --port 800 --reload
+
+## Full Setup with Virtual Environment
+1. Open Command Prompt or PowerShell in this folder
+2. Create virtual environment: python -m venv venv
+3. Activate virtual environment: 
+   - Command Prompt: venv\Scripts\activate.bat
+   - PowerShell: .\venv\Scripts\Activate.ps1
+4. Install dependencies: pip install -r requirements.txt
+5. Run the app: python -m uvicorn main:app --host 0.0.0.0 --port 800 --reload
+
+## Access Your App
+- Open browser and go to: http://localhost:800
+- Press Ctrl+C in terminal to stop the server
+
+## Notes
+- Uses SQLite database (no external database required)
+- All dependencies are Windows-compatible
+- Removed Linux-specific packages (gunicorn, etc.)
+
+uvicorn main:app --reload

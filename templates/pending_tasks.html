@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Tasks - To-Do App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-light">
+    
+    <!-- Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-check2-square me-2"></i>ToDo App
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/create-task">
+                            <i class="bi bi-plus-circle me-1"></i>Create Task
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pending-tasks">
+                            <i class="bi bi-hourglass-split me-1"></i>Pending Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/completed-tasks">
+                            <i class="bi bi-check-circle me-1"></i>Completed Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/daily-templates">
+                            <i class="bi bi-calendar-check me-1"></i>Daily Templates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reports">
+                            <i class="bi bi-graph-up me-1"></i>Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/deleted-tasks">
+                            <i class="bi bi-trash me-1"></i>Deleted Tasks
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Date and Time Widget -->
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-primary shadow-sm">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
+                                <div class="d-flex align-items-center text-primary">
+                                    <i class="bi bi-calendar3 me-2 fs-5"></i>
+                                    <span id="current-date" class="fw-semibold"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
+                                <span class="badge bg-primary rounded-pill px-3 py-2">
+                                    <i class="bi bi-clock me-1"></i>EST: <span id="est-time"></span>
+                                </span>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
+                                <span class="badge bg-success rounded-pill px-3 py-2">
+                                    <i class="bi bi-globe me-1"></i>PST: <span id="pst-time"></span>
+                                </span>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <span class="badge bg-info rounded-pill px-3 py-2">
+                                    <i class="bi bi-globe-asia-australia me-1"></i>IST: <span id="ist-time"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="container my-5">
+        <div class="card shadow-lg rounded-3">
+            <div class="card-header bg-warning text-dark text-center py-3 rounded-top-3">
+                <h1 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Pending Tasks</h1>
+            </div>
+            <div class="card-body p-4">
+                {% if tasks %}
+                <div class="alert alert-info mb-4" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>You have <strong>{{ tasks|length }}</strong> pending task(s).
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col"><i class="bi bi-card-text me-1"></i>Task Name</th>
+                                <th scope="col"><i class="bi bi-flag me-1"></i>Priority</th>
+                                <th scope="col"><i class="bi bi-tag me-1"></i>Type</th>
+                                <th scope="col"><i class="bi bi-calendar-event me-1"></i>Start Date</th>
+                                <th scope="col"><i class="bi bi-calendar-x me-1"></i>Deadline</th>
+                                <th scope="col"><i class="bi bi-clock me-1"></i>Allocated</th>
+                                <th scope="col"><i class="bi bi-gear me-1"></i>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr class="{% if task.deadline_date < date.today() %}table-danger{% elif task.deadline_date == date.today() %}table-warning{% endif %}">
+                                <td data-label="Task Name">
+                                    <strong>{{ task.name }}</strong>
+                                    {% if task.deadline_date < date.today() %}
+                                        <span class="badge bg-danger ms-2">Overdue</span>
+                                    {% elif task.deadline_date == date.today() %}
+                                        <span class="badge bg-warning text-dark ms-2">Due Today</span>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Priority"><span class="badge bg-{{ 'danger' if task.priority == 'High' else ('warning text-dark' if task.priority == 'Medium' else 'success') }}">{{ task.priority }}</span></td>
+                                <td data-label="Type">
+                                    <span class="badge bg-{{ 'primary' if task.task_type == 'SRE' else ('info' if task.task_type == 'Automation' else ('warning text-dark' if task.task_type == 'Monitoring' else ('secondary' if task.task_type == 'Observability' else ('dark' if task.task_type == 'BAU' else ('success' if task.task_type == 'Meetings' else ('danger' if task.task_type == 'PTO' else ('warning' if task.task_type == 'Holiday' else 'light text-dark'))))))) }}">
+                                        {{ '🛡️' if task.task_type == 'SRE' else ('🤖' if task.task_type == 'Automation' else ('📊' if task.task_type == 'Monitoring' else ('👁️' if task.task_type == 'Observability' else ('🔧' if task.task_type == 'BAU' else ('🤝' if task.task_type == 'Meetings' else ('🌴' if task.task_type == 'PTO' else ('🏖️' if task.task_type == 'Holiday' else '📋'))))))) }} {{ task.task_type }}
+                                    </span>
+                                </td>
+                                <td data-label="Start Date">{{ task.start_date.strftime('%Y-%m-%d') }}</td>
+                                <td data-label="Deadline">{{ task.deadline_date.strftime('%Y-%m-%d') }}</td>
+                                <td data-label="Allocated"><span class="badge bg-secondary">{{ task.time_allocated }} min</span></td>
+                                <td data-label="Actions">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-success btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#completeTaskModal{{ task.id }}"
+                                                title="Mark Complete">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                        <!-- Quick Complete Alternative -->
+                                        <form method="post" action="/tasks/{{ task.id }}/complete" style="display: inline;">
+                                            <input type="hidden" name="time_taken" value="{{ task.time_allocated }}">
+                                            <button type="submit" class="btn btn-warning btn-sm" title="Quick Complete (Default Time)">
+                                                <i class="bi bi-lightning"></i>
+                                            </button>
+                                        </form>
+                                        <a href="/edit-task/{{ task.id }}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Modals outside the table -->
+                {% for task in tasks %}
+                <!-- Complete Task Modal - SIMPLIFIED -->
+                <div class="modal" id="completeTaskModal{{ task.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Complete Task: {{ task.name }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="post" action="/tasks/{{ task.id }}/complete">
+                                <div class="modal-body">
+                                    <label for="time_taken_{{ task.id }}" class="form-label">Time Taken (minutes)</label>
+                                    <input type="number" class="form-control" id="time_taken_{{ task.id }}" name="time_taken" value="{{ task.time_allocated }}" min="0" required>
+                                    <small class="form-text text-muted">Originally allocated: {{ task.time_allocated }} minutes</small>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-success">Mark Complete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delete Task Modal -->
+                <div class="modal fade" id="deleteTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="deleteTaskModalLabel{{ task.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="deleteTaskModalLabel{{ task.id }}">
+                                    Delete Task
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete the task <strong>"{{ task.name }}"</strong>?</p>
+                                <p class="text-muted">This action cannot be undone.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="/tasks/{{ task.id }}/delete" method="post" class="d-inline" style="margin-left: 10px;">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="alert alert-success text-center py-5" role="alert">
+                    <i class="bi bi-check-circle-fill" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">No Pending Tasks!</h4>
+                    <p class="mb-0">Great job! You're all caught up. Time to relax or <a href="/create-task" class="alert-link">create a new task</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <script>
+        function completeTaskWithPrompt(taskId, defaultTime) {
+            const timeTaken = prompt(`Enter time taken (minutes) for this task:`, defaultTime);
+            if (timeTaken !== null && timeTaken !== "") {
+                const timeValue = parseInt(timeTaken);
+                if (timeValue >= 0) {
+                    // Create a form and submit it
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/tasks/${taskId}/complete`;
+                    
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'time_taken';
+                    input.value = timeValue;
+                    
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    alert('Please enter a valid time value (0 or greater).');
+                }
+            }
+        }
+        
+        // Date and Time Display Functions
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format current date
+            const dateOptions = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
+            
+            // EST Time (Eastern Time)
+            const estTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'America/New_York',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('est-time').textContent = estTime;
+            
+            // PST Time (Pacific Time)
+            const pstTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'America/Los_Angeles',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('pst-time').textContent = pstTime;
+            
+            // IST Time (Indian Standard Time)
+            const istTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('ist-time').textContent = istTime;
+        }
+        
+        // Update time immediately and then every second
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
