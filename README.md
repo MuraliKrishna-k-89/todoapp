@@ -17,24 +17,6 @@ A comprehensive, modern todo application built with FastAPI, SQLModel, and Boots
 
 - **Deleted Tasks Backup**: 15-day retention for accidentally deleted tasks
 - **One-Click Restore**: Easily restore deleted tasks
-- **Automatic Cleanup**: Old backups removed automaticallytion Ready
-
-A comprehensive, modern todo application built with FastAPI, SQLModel, and Bootstrap 5.
-
-## 🚀 Features
-
-### ✨ Core Functionality
-
-- **Task Management**: Create, edit, delete, and complete tasks
-- **Priority Levels**: High, Medium, Low priority with visual indicators
-- **Task Types**: BAU, SRE, Automation, Monitoring, Observability, Other
-- **Time Tracking**: Allocated vs actual time spent
-- **Status Management**: Pending and completed task tracking
-
-### 🗑️ Backup & Recovery
-
-- **Deleted Tasks Backup**: 15-day retention for accidentally deleted tasks
-- **One-Click Restore**: Easily restore deleted tasks
 - **Automatic Cleanup**: Old backups removed automatically
 
 ### 📊 Reports & Analytics
