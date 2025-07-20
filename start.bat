@@ -5,7 +5,7 @@ REM Set environment variables
 if not defined DEBUG set DEBUG=false
 if not defined DATABASE_URL set DATABASE_URL=sqlite:///todo.db
 if not defined HOST set HOST=0.0.0.0
-if not defined PORT set PORT=800
+if not defined PORT set PORT=8111
 
 REM Check if virtual environment exists
 if not exist "venv" (

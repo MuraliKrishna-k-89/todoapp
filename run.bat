@@ -5,7 +5,7 @@ echo 🚀 Quick Start - Todo App
 
 REM Use your existing Python environment or virtual environment
 echo 🌟 Starting Todo App...
-echo 📍 Your app will be available at: http://localhost:800
+echo 📍 Your app will be available at: http://localhost:8111
 echo 📍 Press Ctrl+C to stop
 
-python -m uvicorn main:app --host 0.0.0.0 --port 800 --reload
+python -m uvicorn main:app --host 0.0.0.0 --port 8111 --reload
